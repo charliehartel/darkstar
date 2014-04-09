@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{title}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+  {title}
+ <ul>
+ {#games}
+  <li>{name} 
+  	<form action='/games/{id}/join' method='post'>
+		<hidden type='number' name='game[id]' placeholder='{id}' />
+    	<input type='submit' value='Join'>
+    </form>
+  </li>
+ {/games}
+ </ul>
+  </body>
+</html>

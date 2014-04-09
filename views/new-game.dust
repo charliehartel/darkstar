@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{title}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+  	{title}
+  	<h3>Create a new game</h3>
+  	<form action='/games/create' method='post'>
+  		<p>
+￼  			<input type='text' name='game[name]' placeholder='Name' />
+		</p>
+		<p>
+			<input type='number' name='game[playerCount]' ➥ placeholder='Number of Players' />
+		</p> 
+		<p>
+        	<input type='submit' value='Create' />
+    	</p>
+    </form>
+  </body>
+</html>
