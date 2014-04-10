@@ -9,12 +9,12 @@ var user = require('./routes/user');
 var games = require('./routes/games');
 var http = require('http');
 var path = require('path');
-var dust = require('dustjs-linkedin'), 
-	cons = require('consolidate');
-
-	
+var dust = require('dustjs-linkedin');
+var cons = require('consolidate');
+var Player = require('./lib/player.js');
 
 var app = express();
+var server = http.createServer(app);
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -29,6 +29,20 @@ app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.cookieParser('your secret here'));
 app.use(express.session());
+app.use(function(req, res, next) {
+	if (!req.session.sessionId) {
+		var player = new Player();
+		player.save(function(err) {
+			if (err) throw error;
+			req.session.sessionId = player.id;
+			console.log('Created Player ' + player.id.toString());
+			next();
+		});
+	} else {
+		next();
+	}
+	
+});
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
 
@@ -46,6 +60,6 @@ app.get('/games/:id?', games.get);
 app.post('/games/:id?/join', games.join);
 
 
-http.createServer(app).listen(app.get('port'), function(){
+server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

@@ -66,35 +66,26 @@ Games.get = function(req, res) {
 };
 
 var joinGame = function(req, res, player) {
-	var i, id;
+	
 
-	if (req && req.params && req.params.id) {
-		id = Number(req.params.id);
-		for (i = 0; i < activeGames.length; i++) {
-			if (activeGames[i].id === id) {
-				activeGames[i].join(player);
-				res.redirect('/games/' + id);
-			}
-		}
-	}
+
 }
 
 Games.join = function(req, res) {
-	if (req.session.sessionId) {
+	var i, id;
+
+	if (req && req.params && req.params.id) {
 		console.log("Loading player " + req.session.sessionId);
 		Player.load(req.session.sessionId, function(err, player) {
-			console.log(player.name + " joinging game " + game.name);
-			joinGame(req, res, player);
-		});
-	}
-	else {
-		var player = new Player();
-		player.save(function(err) {
-			if (err) throw error;
-			req.session.sessionId = player.id;
-			console.log("Created player " + player.id);
-			joinGame(req, res, player);
-		});
+			if (err) throw err;
+			id = Number(req.params.id);
+			for (i = 0; i < activeGames.length; i++) {
+				if (activeGames[i].id === id) {
+					activeGames[i].join(player);
+					res.redirect('/games/' + id);
+				}
+			}
+		});	
 	}
 };
 
