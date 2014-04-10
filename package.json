@@ -13,6 +13,7 @@
     "consolidate": "*",
     "ejs": "*",
     "ejs-locals": "*",
-    "socket.io": "*"
+    "socket.io": "*",
+    "redis": "*"
   }
 }
