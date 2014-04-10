@@ -1,13 +1,21 @@
+'use strict';
+
 //ActiveGames =  require('../lib/active-games.js');
 var Game = require('../lib/game.js');
 var Player = require('../lib/player.js');
 
-var activeGames = [ Game.create('FirstGame', 8),
-					Game.create('Second Game', 12)
-				  ];
+var activeGames = [];
+
+var gameOne = new Game({name: 'FirstGame', playerCount: 8});
+gameOne.save(function(err) {activeGames.push(gameOne);});
+
+var gameTwo = new Game({name: 'Second Game', playerCount: 12});
+gameTwo.save(function(err) {activeGames.push(gameTwo);});
+
 
 var Games = function() {
-}
+	this.name = '';
+};
 
 Games.list = function(req, res) {
 	var games = activeGames;
@@ -22,21 +30,35 @@ Games.new = function(req, res) {
 Games.create = function(req, res) {
 	var name, playerCount, game;
 
+	console.log(req.body.game);
 	if (req && req.body && req.body.game && req.body.game.name) {
+		console.log('Games:create');
 		name = req.body.game.name;
 		playerCount = req.body.game.playerCount;
-		game = Game.create(name, playerCount);
-		activeGames.push(game);
-		console.log('Creating game ' + name + '[' + game.id +'] with up to ' + game.playerCount.toString() + ' users.');
-		res.redirect('/games/' + game.id.toString());
+		game = new Game({
+			name: name,
+			playerCount: playerCount
+		});
+		game.save(function(err) {
+			console.log('Saved!');
+			if (err) throw err;
+			activeGames.push(game);
+			console.log('Creating game ' + name + '[' + game.id +'] with up to ' + game.playerCount.toString() + ' users.');
+			console.log('redirect: /games/' + game.id.toString());
+			console.log(res);
+			res.redirect('/games/' + game.id.toString());
+		});
+		
 	}
 };
 
 Games.get = function(req, res) {
-	var i;
+	var i, id;
+	console.log('Games:get')
 	if (req && req.params && req.params.id) {
 		for (i = 0; i < activeGames.length; i++) {
-			if (activeGames[i].id === req.params.id) {
+			id = Number(req.params.id);
+			if (activeGames[i].id === id) {
 				res.render('game', {game: activeGames[i]});
 			}
 		}
@@ -44,33 +66,36 @@ Games.get = function(req, res) {
 };
 
 var joinGame = function(req, res, player) {
+	var i, id;
+
 	if (req && req.params && req.params.id) {
+		id = Number(req.params.id);
 		for (i = 0; i < activeGames.length; i++) {
-			if (activeGames[i].id === req.params.id) {
+			if (activeGames[i].id === id) {
 				activeGames[i].join(player);
-				res.redirect('/games/' + req.params.id);
+				res.redirect('/games/' + id);
 			}
 		}
 	}
 }
 
 Games.join = function(req, res) {
-	var i, player;
-	if (req.session.id) {
-		console.log("Loading player " + req.session.id);
-		Player.load(req.session.id, function(err, player) {
+	if (req.session.sessionId) {
+		console.log("Loading player " + req.session.sessionId);
+		Player.load(req.session.sessionId, function(err, player) {
 			console.log(player.name + " joinging game " + game.name);
 			joinGame(req, res, player);
 		});
 	}
-	/*
 	else {
-		player = new Player();
+		var player = new Player();
 		player.save(function(err) {
-			if (err) throw err;
-			joinGame(player);
+			if (err) throw error;
+			req.session.sessionId = player.id;
+			console.log("Created player " + player.id);
+			joinGame(req, res, player);
 		});
-	}*/
+	}
 };
 
 module.exports = Games;

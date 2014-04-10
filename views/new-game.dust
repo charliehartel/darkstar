@@ -12,7 +12,7 @@
 ￼  			<input type='text' name='game[name]' placeholder='Name' />
 		</p>
 		<p>
-			<input type='number' name='game[playerCount]' ➥ placeholder='Number of Players' />
+			<input type='number' name='game[playerCount]' placeholder='Number of Players' />
 		</p> 
 		<p>
         	<input type='submit' value='Create' />
