@@ -12,9 +12,9 @@ var path = require('path');
 var dust = require('dustjs-linkedin');
 var cons = require('consolidate');
 var Player = require('./lib/player.js');
-
 var app = express();
 var server = http.createServer(app);
+var io = require('socket.io').listen(server);
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -62,4 +62,12 @@ app.post('/games/:id?/join', games.join);
 
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
+});
+
+io.sockets.on('connection', function (socket) {
+	socket.on('join', function (data) {
+		if (data) {
+			games.connect(socket, data);
+		}
+	});
 });
