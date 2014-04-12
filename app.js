@@ -58,6 +58,7 @@ app.get('/games/new', games.new);
 app.post('/games/create', games.create);
 app.get('/games/:id?', games.get);
 app.post('/games/:id?/join', games.join);
+app.post('/games/:id?/start', games.start);
 
 
 server.listen(app.get('port'), function(){
