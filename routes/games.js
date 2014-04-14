@@ -94,7 +94,16 @@ Games.create = function(req, res) {
 
 Games.get = function(req, res) {
 	loadGameAndPlayer(req, res, function(data) {
-		res.render('game', {game: data.game, player:data.player, players: data.game.players});
+		var template = '';
+		if (!data.game.isStarted()) {
+			template = '/game/active-game';
+		} else if (data.game.isFinished()) {
+			template = '/game/finished-game';
+		} else {
+			template = '/game/pre-game';
+		}
+
+		res.render(template, {game: data.game, player:data.player, players: data.game.players});
 	});
 };
 
