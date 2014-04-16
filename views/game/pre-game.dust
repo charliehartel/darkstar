@@ -9,18 +9,19 @@
   </head>
   <body>
   <h2>{game.name}</h2>
-  <h3>Players</h3>
-  <ul>
-  {#players}
-  	<li>
-  		<p>{name}</p>
-  	</li>
-  {/players}
-  </ul>
-  <div id="status" game-id="{game.id}" player-id="{player.id}">
+  <div id="players">
+    <h3>Players</h3>
+    <ul>
+      {#players}
+  	  <li>
+  		  <p>{name}</p>
+  	  </li>
+      {/players}
+    </ul>
   </div>
-  <form action='/games/{id}/start' method='post'>
-		<hidden type='number' name='game[id]' placeholder='{id}' />
+  <div id="status" game-id="{game.id}" player-id="{player.id}"/>
+  <form action='/games/{game.id}/start' method='post'>
+		<hidden type='number' name='game[id]' placeholder='{game.id}' />
     	<input type='submit' value='Start Game'>
     </form>
  </ul>
@@ -32,7 +33,11 @@
   socket.emit('join', {gameId: gameId, playerId: playerId});
   socket.on('message', function (data) {
   	console.log(data);
-    $('#status').append('<p>' + data.text + '</p>');
+    $('#players').append('<li><p>' + data.text + '</p></li>');
+  });
+  socket.on('refresh', function (data) {
+    console.log('refresh');
+    location.reload();
   });
 </script>
   </body>

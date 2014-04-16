@@ -96,11 +96,11 @@ Games.get = function(req, res) {
 	loadGameAndPlayer(req, res, function(data) {
 		var template = '';
 		if (!data.game.isStarted()) {
-			template = '/game/active-game';
+			template = './game/active-game';
 		} else if (data.game.isFinished()) {
-			template = '/game/finished-game';
+			template = './game/finished-game';
 		} else {
-			template = '/game/pre-game';
+			template = './game/pre-game';
 		}
 
 		res.render(template, {game: data.game, player:data.player, players: data.game.players});
@@ -110,7 +110,8 @@ Games.get = function(req, res) {
 Games.join = function(req, res) {
 	loadGameAndPlayer(req, res, function(data) {
 		data.game.join(data.player, function(err) {
-			res.redirect('/games/' + data.game.id);
+			if (!err) res.redirect('/games/' + data.game.id);
+			else res.render('error');
 		});
 	});
 };
@@ -130,7 +131,16 @@ Games.connect = function(socket, data) {
 };
 
 Games.start = function(req, res) {
-
+	loadGameAndPlayer(req, res, function(data) {
+		data.game.start(function(err) {
+			if (!err) {
+				io.sockets.in(data.game.id).emit('refresh', {});
+			} 
+			else {
+				res.render('error');
+			}
+		});
+	});
 
 };
 
